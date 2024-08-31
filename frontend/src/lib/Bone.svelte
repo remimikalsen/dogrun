@@ -1,14 +1,16 @@
 <script>
     export let x;
     export let y;
-    export let width = 20;
+    export let width = 40;
     export let height = 20;
 </script>
 
 <style>
     .bone {
         position: absolute;
-        background-color: yellow;
+        background-image: url('/images/bone/bone.png');
+        background-size: cover;
+        background-color: transparent;
     }
 </style>
 

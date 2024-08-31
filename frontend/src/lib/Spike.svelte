@@ -1,15 +1,16 @@
 <script>
     export let x;
     export let y;
-    export let width = 20;
+    export let width = 23;
     export let height = 20;
 </script>
 
 <style>
     .spike {
         position: absolute;
-        background-color: red;
-        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        background-image: url('/images/spike/dog-catcher.png');
+        background-size: cover;
+        background-color: transparent;
     }
 </style>
 

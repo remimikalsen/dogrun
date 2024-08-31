@@ -4,6 +4,7 @@
     export let width = 50;
     export let height = 50;
     export let state = 'normal'; // default state
+    export const collisionTolerance = 0;
   
     let dogImage;
   
@@ -38,6 +39,7 @@
   <style>
     .dog {
       position: absolute;
+      z-index: 1000;
     }
   </style>
   
