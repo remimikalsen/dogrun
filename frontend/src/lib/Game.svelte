@@ -882,7 +882,7 @@
                 transform: translate(50%, -50%) scale(0.5);
             }
             100% {
-                transform: translate(calc(100% - 10px), -15px) scale(0);
+                transform: translate(40%, -100%) scale(0);
             }
         }     
 
