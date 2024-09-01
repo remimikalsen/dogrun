@@ -453,10 +453,23 @@
             } else if (direction === 'jump') {
                 jump();
             }
+
+            // Start continuous input
+            virtualKeyInterval = setInterval(() => {
+                if (direction === 'right') {
+                    dogSpeed = 5;
+                } else if (direction === 'left') {
+                    dogSpeed = -5;
+                } else if (direction === 'jump') {
+                    jump();
+                }
+            }, 5); // Adjust the interval as needed            
+
         }
 
         function handleVirtualKeyUp() {
             dogSpeed = 0;
+            clearInterval(virtualKeyInterval);
         }
 
         async function handleLevelCompletion() {
@@ -606,6 +619,10 @@
             border: 2px solid black;
             border-radius: 10px;
             cursor: pointer;
+            user-select: none;  /* Prevent text selection */
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -moz-user-select: none;
         }
 
         .left-column,
@@ -1018,9 +1035,9 @@
                 <Goal x={goal.x - cameraOffsetX} y={goal.y} />
                 </div>
         <div class="virtual-joystick">
-            <div class="virtual-key" on:mousedown={() => handleVirtualKey('left')} on:mouseup={handleVirtualKeyUp}>◀</div>
-            <div class="virtual-key" on:mousedown={() => handleVirtualKey('jump')} on:mouseup={handleVirtualKeyUp}>▲</div>
-            <div class="virtual-key" on:mousedown={() => handleVirtualKey('right')} on:mouseup={handleVirtualKeyUp}>▶</div>
+            <div class="virtual-key" on:mousedown={() => handleVirtualKey('left')} on:mouseup={handleVirtualKeyUp} on:touchstart={() => handleVirtualKey('left')} on:touchend={handleVirtualKeyUp}>◀</div>
+            <div class="virtual-key" on:mousedown={() => handleVirtualKey('jump')} on:mouseup={handleVirtualKeyUp} on:touchstart={() => handleVirtualKey('jump')} on:touchend={handleVirtualKeyUp}>▲</div>
+            <div class="virtual-key" on:mousedown={() => handleVirtualKey('right')} on:mouseup={handleVirtualKeyUp} on:touchstart={() => handleVirtualKey('right')} on:touchend={handleVirtualKeyUp}>▶</div>
         </div>
     </div>
     <div bind:this={pausedOverlay} class="paused-overlay {!gamePaused ? 'paused-overlay-hidden' : ''}" >
