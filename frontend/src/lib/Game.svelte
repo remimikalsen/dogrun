@@ -11,18 +11,19 @@
         import Bone from '$lib/Bone.svelte'; 
         import Message from '$lib/Message.svelte';
         import VirtualKeyboard from '$lib/VirtualKeyboard.svelte';
+        import VirtualJoystick from '$lib/VirtualJoystick.svelte';
         
         let showNextLevelMessage = false;
         let showCongratulations = false;
         let showErrorMessage = false;
         let showGameOverMessage = false;
         let showVirtualKeyboard = false;
+        let showVirtualJoystick = true;
         let showFailureMessage = false;
         let showBonusAnimation = false;
         let winnerFound = false;
         let pulsateScore = false;
         let pulsateFail = false;
-        let virtualKeyInterval;
 
 
         let gameContainer; // Reference to the game container
@@ -158,6 +159,7 @@
             showGame = true;
             winnerFound = false;
             gamePaused = false;
+            showVirtualJoystick = true;
             generateLevel($currentLevel);
         }
 
@@ -238,6 +240,7 @@
             // Adjust the goal's y to match the ground height
             goal.y = groundHeight - goal.y;
             
+            showVirtualJoystick = true;
             velocityY = 0;
             cameraOffsetX = 0;
             dogSpeed = 0;
@@ -440,45 +443,23 @@
             }
         }
 
-        function handleVirtualKey(direction) {
-            if (direction === 'right') {
-                //if (!jumping || (jumping && !directionChanged)) {
-                    dogSpeed = 5;
-                //    if (jumping) directionChanged = true;
-                //}
-            } else if (direction === 'left') {
-                //if (!jumping || (jumping && !directionChanged)) {
-                    dogSpeed = -5;
-                //    if (jumping) directionChanged = true;
-                //}
-            } else if (direction === 'jump') {
+        function handleVirtualKey(event) {
+            const { key } = event.detail;
+            switch (key) {
+            case 'ArrowUp':
                 jump();
+                break;
+            case 'ArrowLeft':
+                dogSpeed = -5;
+                break;
+            case 'ArrowRight':
+                dogSpeed = 5;
+                break;
             }
-
-            // Start continuous input
-            virtualKeyInterval = setInterval(() => {
-                if (direction === 'right') {
-                    dogSpeed = 5;
-                } else if (direction === 'left') {
-                    dogSpeed = -5;
-                } else if (direction === 'jump') {
-                    jump();
-                }
-            }, 5); // Adjust the interval as needed            
-
-        }
-
-        function handleVirtualKeyUp() {
-            dogSpeed = 0;
-            clearInterval(virtualKeyInterval);
         }
 
         async function handleLevelCompletion() {
-
-            if (virtualKeyInterval) {
-                clearInterval(virtualKeyInterval);
-            }
-
+            showVirtualJoystick = false;
             if (gameStopped) {
                 return;
             }
@@ -539,9 +520,7 @@
 
         async function handleGameOver() {
 
-            if (virtualKeyInterval) {
-                clearInterval(virtualKeyInterval);
-            }
+            showVirtualJoystick = false;
 
             if (gameStopped) {
                 return;
@@ -616,25 +595,7 @@
             background-color: green;
             bottom: 0;
         }
-
         
-        .virtual-key {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            background-color: #e94560;;
-            text-align: center;
-            line-height: 50px;
-            font-size: 20px;
-            border: 2px solid black;
-            border-radius: 10px;
-            cursor: pointer;
-            user-select: none;  /* Prevent text selection */
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            -moz-user-select: none;
-        }
-
         .left-column,
         .right-column {
         flex: 1; /* Make both columns take equal space */
@@ -778,21 +739,6 @@
         .leaderboard .bones {
         width: 35%;
         text-align: center;
-        }
-
-
-        .virtual-joystick {
-            display: none;
-        }
-
-        @media (pointer: coarse) {
-            .virtual-joystick {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-top: 20px;
-                margin-bottom: 30px;
-            }
         }
 
         .game-info {
@@ -1044,11 +990,9 @@
                 {/each}
                 <Goal x={goal.x - cameraOffsetX} y={goal.y} />
                 </div>
-        <div class="virtual-joystick">
-            <div class="virtual-key" on:mousedown={() => handleVirtualKey('left')} on:mouseup={handleVirtualKeyUp} on:touchstart={() => handleVirtualKey('left')} on:touchend={handleVirtualKeyUp}>◀</div>
-            <div class="virtual-key" on:mousedown={() => handleVirtualKey('jump')} on:mouseup={handleVirtualKeyUp} on:touchstart={() => handleVirtualKey('jump')} on:touchend={handleVirtualKeyUp}>▲</div>
-            <div class="virtual-key" on:mousedown={() => handleVirtualKey('right')} on:mouseup={handleVirtualKeyUp} on:touchstart={() => handleVirtualKey('right')} on:touchend={handleVirtualKeyUp}>▶</div>
-        </div>
+                {#if showVirtualJoystick}
+                <VirtualJoystick on:key={handleVirtualKey} />
+                {/if}
     </div>
     <div bind:this={pausedOverlay} class="paused-overlay {!gamePaused ? 'paused-overlay-hidden' : ''}" >
         Press P to continue
