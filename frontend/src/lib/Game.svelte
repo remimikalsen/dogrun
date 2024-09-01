@@ -760,7 +760,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 0px;
-            font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
             font-size: 1.5rem;
             color: white;
         }
