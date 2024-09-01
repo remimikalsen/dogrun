@@ -84,6 +84,7 @@
         }
 
         onMount(() => {
+            lives = initialLives;
             generateLevel($currentLevel);
             loadLeaderboard();  // Load the leaderboard when the component is mounted
 
