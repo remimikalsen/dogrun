@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  dogrun_frontend:
+    restart: unless-stopped
+    build:
+      context: ./frontend
+    ports:
+      - "8080:3000"
+    depends_on:
+      - dogrun_backend
+
+  dogrun_backend:
+    restart: unless-stopped
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./dogrun_db:/app/database
