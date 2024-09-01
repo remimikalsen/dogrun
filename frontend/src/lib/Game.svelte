@@ -67,6 +67,7 @@
         let playerInitials = '';
 
         let pausedOverlay;
+        let bonusOverlay;
         let gameWrapper;
 
         $: gameStopped = !showGame || showFailureMessage || showNextLevelMessage || showCongratulations || showErrorMessage || showGameOverMessage || winnerFound;
@@ -90,8 +91,7 @@
             //gameContainer.focus();
 
             window.addEventListener('keydown', handleShortcutKeyDown);
-            window.addEventListener('resize', updatePausedOverlayPosition);
-
+            window.addEventListener('resize', updateOverlayPositions);
             const gameLoop = setInterval(() => {
                 if (!gameOver && !gamePaused) {
                     update();
@@ -99,9 +99,8 @@
             }, 10);
             return () => {
                 clearInterval(gameLoop);
-                clearInterval(virtualKeyInterval);
                 window.removeEventListener('keydown', handleShortcutKeyDown);
-                window.removeEventListener('resize', updatePausedOverlayPosition);
+                window.removeEventListener('resize', updateOverlayPositions);
             }
         });
 
@@ -171,23 +170,33 @@
         function togglePause() {
             pressedKeys = new Set();
             gamePaused = !gamePaused;
-            updatePausedOverlayPosition();
+            updateOverlayPositions();
             gameContainer.focus();
             
         }
 
-        function updatePausedOverlayPosition() {
-            console.log(gamePaused);
-            console.log(gameWrapper);
-            console.log(pausedOverlay); 
+        function updateOverlayPositions() {
+            //console.log(gamePaused);
+            //console.log(gameWrapper);
+            //console.log(pausedOverlay); 
             if (gameWrapper && pausedOverlay) {
-                console.log("Updating overlay position");
+                //console.log("Updating overlay position");
                 const rect = gameWrapper.getBoundingClientRect();
                 pausedOverlay.style.top = `${rect.top + window.scrollY-20}px`;
                 pausedOverlay.style.left = `${rect.left + window.scrollX-20}px`;
                 pausedOverlay.style.width = `${rect.width+40}px`;
                 pausedOverlay.style.height = `${rect.height+40}px`;
             }
+
+            if (gameWrapper && bonusOverlay) {
+                //console.log("Updating overlay position");
+                const rect = gameWrapper.getBoundingClientRect();
+                bonusOverlay.style.top = `${rect.top + window.scrollY-20}px`;
+                bonusOverlay.style.left = `${rect.left + window.scrollX-20}px`;
+                bonusOverlay.style.width = `${rect.width+40}px`;
+                bonusOverlay.style.height = `${rect.height+40}px`;
+            }
+
         }        
 
         function generateLevel(level) {
@@ -469,7 +478,8 @@
 
         async function handleLevelCompletion() {
             showVirtualJoystick = false;
-            
+            updateOverlayPositions();
+
             if (gameStopped) {
                 return;
             }
@@ -791,10 +801,6 @@
             height: auto;
         }
 
-        .removebone {
-            color: black;
-        }
-
         .next-level-overlay,
         .failure-message-overlay {
             margin: 100px auto;
@@ -804,6 +810,7 @@
             font-size: 1.3rem;
             width: 100%;
         }
+
 
         .next-level-message,
         .failure-message {
@@ -816,6 +823,10 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 1000;
         }
+
+        .failure-message-overlay.new-chance .failure-message {
+            background-color: #f0b300;
+        }        
         
         .next-level-message {
             background-color: #1e4f1e;
@@ -836,6 +847,12 @@
             transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
         }
+
+        .failure-message-overlay.new-chance .failure-button {
+            background-color: white;
+            color: #c77328;
+            border: 2px solid #f0b300;
+        }        
 
         .next-level-button {
             color: #1e4f1e;
@@ -929,6 +946,30 @@
             min-width: 250px;
             margin: 20px auto;
         }
+        .bonus-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffd700; /* Golden color */
+            font-size: 2rem;
+            text-align: center;
+            font-weight: bold;
+            z-index: 2000;
+            text-shadow: 
+                0 0 5px #ffd700,  /* Inner glow */
+                0 0 10px #ffd700, /* Slightly outer glow */
+                0 0 20px #ffd700, /* Further outer glow */
+                0 0 40px #ff8c00;
+        }
+
+        .bonus-overlay-hidden {
+            display: none;
+        }        
     </style>
 <div class="container" tabindex="-1">
 <div class="left-column" tabindex="-1">
@@ -953,7 +994,7 @@
                 {/each}
             </div>
             {#if showFailureMessage}
-            <div class="failure-message-overlay">
+            <div class="failure-message-overlay new-chance">
                 <div class="failure-message">
                     <p>Level failed!</p>
                     <button class="failure-button" on:click={acknowledgeFailure}>Try again</button>
@@ -999,6 +1040,9 @@
     <div bind:this={pausedOverlay} class="paused-overlay {!gamePaused ? 'paused-overlay-hidden' : ''}" >
         Press P to continue
     </div>
+    <div bind:this={bonusOverlay} class="bonus-overlay {showBonusAnimation ? '' : 'bonus-overlay-hidden'}">
+        Bonus for {lives} lives!
+    </div>    
 {/if}
 {#if showCongratulations}
 <Message type="winner" message={currentMessage} />
