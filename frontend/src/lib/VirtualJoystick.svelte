@@ -47,10 +47,10 @@
 </script>
 
 <div class="virtual-joystick">
-    <button use:handleTouchEvents={'ArrowUp'}>↑</button>
+    
     <div>
+        <button class="up" use:handleTouchEvents={'ArrowUp'}>↑</button>
         <button use:handleTouchEvents={'ArrowLeft'}>←</button>
-        <!--<button use:handleTouchEvents={'ArrowDown'}>↓</button>-->
         <button use:handleTouchEvents={'ArrowRight'}>→</button>
     </div>
 </div>
@@ -61,7 +61,14 @@
 <style>
 
     .virtual-joystick {
-        display: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .virtual-joystick .up {
+        margin-right: 75px;
     }
 
 @media (pointer: coarse) {
