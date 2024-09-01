@@ -82,9 +82,6 @@
         }
 
         onMount(() => {
-            if (virtualKeyInterval) {
-                clearInterval(virtualKeyInterval);
-            }
             generateLevel($currentLevel);
             loadLeaderboard();  // Load the leaderboard when the component is mounted
 
@@ -101,6 +98,7 @@
             }, 10);
             return () => {
                 clearInterval(gameLoop);
+                clearInterval(virtualKeyInterval);
                 window.removeEventListener('keydown', handleShortcutKeyDown);
                 window.removeEventListener('resize', updatePausedOverlayPosition);
             }
@@ -476,10 +474,14 @@
         }
 
         async function handleLevelCompletion() {
+
+            if (virtualKeyInterval) {
+                clearInterval(virtualKeyInterval);
+            }
+
             if (gameStopped) {
                 return;
             }
-
             //console.log("Bones collected level: ", $bonesCollectedLevel);
             //console.log("Bones collected: ", $bonesCollected);
 
@@ -536,6 +538,11 @@
         }
 
         async function handleGameOver() {
+
+            if (virtualKeyInterval) {
+                clearInterval(virtualKeyInterval);
+            }
+
             if (gameStopped) {
                 return;
             }   
