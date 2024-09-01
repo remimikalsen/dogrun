@@ -159,7 +159,6 @@
             showGame = true;
             winnerFound = false;
             gamePaused = false;
-            showVirtualJoystick = true;
             generateLevel($currentLevel);
         }
 
@@ -444,22 +443,33 @@
         }
 
         function handleVirtualKey(event) {
-            const { key } = event.detail;
+            const { type, key } = event.detail;
             switch (key) {
-            case 'ArrowUp':
-                jump();
-                break;
-            case 'ArrowLeft':
-                dogSpeed = -5;
-                break;
-            case 'ArrowRight':
-                dogSpeed = 5;
-                break;
+                case 'ArrowUp':
+                    if (type === 'pressed') {
+                        jump();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (type === 'pressed') {
+                        dogSpeed = -5;
+                    } else if (type === 'released') {
+                        dogSpeed = 0;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (type === 'pressed') {
+                        dogSpeed = 5;
+                    } else if (type === 'released') {
+                        dogSpeed = 0;
+                    }
+                    break;
             }
         }
 
         async function handleLevelCompletion() {
             showVirtualJoystick = false;
+            
             if (gameStopped) {
                 return;
             }
@@ -586,14 +596,6 @@
             overflow: hidden;
             background-color: skyblue;
             outline: none;
-        }
-
-        .ground {
-            position: absolute;
-            width: 100%;
-            height: 50px;
-            background-color: green;
-            bottom: 0;
         }
         
         .left-column,

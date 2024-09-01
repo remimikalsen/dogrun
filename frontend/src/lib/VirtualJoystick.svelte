@@ -3,51 +3,57 @@
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
-    let interval;
+    let intervals = {};
 
     function startKeyRepeat(key) {
-        handleKey(key);
-        interval = setTimeout(() => {
-            interval = setInterval(() => {
-                handleKey(key);
+        handleKey(key, 'pressed');
+        intervals[key] = setTimeout(() => {
+            intervals[key] = setInterval(() => {
+                handleKey(key, 'pressed');
             }, 100);
         }, 100);
     }
 
-    function stopKeyRepeat() {
-        clearTimeout(interval);
-        clearInterval(interval);
+    function stopKeyRepeat(key) {
+        clearTimeout(intervals[key]);
+        clearInterval(intervals[key]);
+        handleKey(key, 'released');
+        delete intervals[key];
     }
 
-    function handleKey(key) {
-        dispatch('key', { key });
+    function handleKey(key, type) {
+        dispatch('key', { key, type });
     }
 
     function handleTouchEvents(node, key) {
         const start = () => startKeyRepeat(key);
-        const stop = () => stopKeyRepeat();
+        const stop = () => stopKeyRepeat(key);
 
         node.addEventListener('touchstart', start);
+        node.addEventListener('mousedown', start);
         node.addEventListener('touchend', stop);
+        node.addEventListener('mouseup', stop);
         node.addEventListener('touchcancel', stop);
+        node.addEventListener('mouseleave', stop);
 
         return {
             destroy() {
                 node.removeEventListener('touchstart', start);
+                node.removeEventListener('mousedown', start);
                 node.removeEventListener('touchend', stop);
+                node.removeEventListener('mouseup', stop);
                 node.removeEventListener('touchcancel', stop);
+                node.removeEventListener('mouseleave', stop);
             }
         };
     }
 
     onDestroy(() => {
-        stopKeyRepeat(); // This will run when the component is unmounted
+        Object.keys(intervals).forEach(key => stopKeyRepeat(key));
     });
-
 </script>
 
 <div class="virtual-joystick">
-    
     <div>
         <button class="up" use:handleTouchEvents={'ArrowUp'}>↑</button>
         <button use:handleTouchEvents={'ArrowLeft'}>←</button>
@@ -55,11 +61,7 @@
     </div>
 </div>
 
-
-<!-- Rest of your Svelte component code -->
-
 <style>
-
     .virtual-joystick {
         display: flex;
         flex-direction: column;
@@ -71,14 +73,14 @@
         margin-right: 75px;
     }
 
-@media (pointer: coarse) {
-    .virtual-joystick {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
+    @media (pointer: coarse) {
+        .virtual-joystick {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
     }
-}
 
     .virtual-joystick button {
         user-select: none;  /* Prevent text selection */
@@ -105,6 +107,4 @@
     .virtual-joystick button:active {
         background-color: #e04b5d;
     }
-
-
 </style>
