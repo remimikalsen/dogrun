@@ -82,7 +82,9 @@
         }
 
         onMount(() => {
-
+            if (virtualKeyInterval) {
+                clearInterval(virtualKeyInterval);
+            }
             generateLevel($currentLevel);
             loadLeaderboard();  // Load the leaderboard when the component is mounted
 
