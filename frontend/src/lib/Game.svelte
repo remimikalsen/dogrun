@@ -1,6 +1,6 @@
     <script>
         import { onMount, tick } from 'svelte';
-        import { bonesCollected, bonesCollectedLevel, currentLevel, bonus } from '$lib/stores.js';
+        import { bonesCollected, bonesCollectedLevel, currentLevel, bonus, lives } from '$lib/stores.js';
         import { levels } from '$lib/levels.js'; 
         import Dog from '$lib/Dog.svelte'; // comes with certain default values
         import Goal from '$lib/Goal.svelte';
@@ -48,8 +48,8 @@
         const gameContainerHeight = 400;
         let groundAdjustment = 2;
 
-        let lives;
         const initialLives = 3;
+        //let lives;
         const lifeBonus = 2; // Bonus per life remaining at end of game
         let dog = {};
         let goal = {};
@@ -84,10 +84,9 @@
         }
 
         onMount(() => {
-            lives = initialLives;
             generateLevel($currentLevel);
             loadLeaderboard();  // Load the leaderboard when the component is mounted
-
+            lives.set(initialLives);
             // Automatically focus the game container when the component is mounted
             //gameContainer.focus();
 
@@ -153,8 +152,8 @@
             $currentLevel = 1; 
             bonesCollected.set(0);
             bonesCollectedLevel.set(0);
-            lives = initialLives;
-            bonus.set(lives * lifeBonus);
+            lives.set(initialLives);
+            bonus.set($lives * lifeBonus);
             showGame = false;
             showGame = true;
             winnerFound = false;
@@ -547,10 +546,10 @@
                 return;
             }   
 
-            if (lives > 1) {
+            if ($lives > 1) {
                 showFailureMessage = true;
-                lives--;
-                bonus.set(lives * lifeBonus);
+                lives.update(n => n - 1); 
+                bonus.set($lives * lifeBonus);
 
                 if ($bonesCollectedLevel > 0) {
 
@@ -988,7 +987,7 @@
             on:keyup={handleKeyUp}
             tabindex="-1">
             <div class="lives {showBonusAnimation ? 'bonus-animation' : ''}">
-                {#each Array(lives) as _, i}
+                {#each Array($lives) as _, i}
                     <div class="life-icon-wrapper">
                         <img src="/images/dog/sitting.png" alt="Life" class="life-icon" />
                     </div>
@@ -1042,7 +1041,7 @@
         Press P to continue
     </div>
     <div bind:this={bonusOverlay} class="bonus-overlay {showBonusAnimation ? '' : 'bonus-overlay-hidden'}">
-        Bonus for {lives} lives!
+        Bonus for {$lives} {$lives !== 1 ? 'lives' : 'life'} left!
     </div>    
 {/if}
 {#if showCongratulations}
