@@ -22,6 +22,7 @@
         let winnerFound = false;
         let pulsateScore = false;
         let pulsateFail = false;
+        let virtualKeyInterval;
 
 
         let gameContainer; // Reference to the game container
