@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const dbPath = path.resolve(__dirname, './database/leaderboard.db');
+const dbPath = path.resolve(__dirname, './data/leaderboard.db');
 const db = new sqlite3.Database(dbPath);
 
 app.use(cors());

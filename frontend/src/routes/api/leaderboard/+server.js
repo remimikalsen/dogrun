@@ -4,7 +4,7 @@ import { json } from '@sveltejs/kit';
 export const GET = async () => {
 
     try {
-        const response = await fetch('http://localhost:3000/api/leaderboard');
+        const response = await fetch('http://sukami_backend:3000/api/leaderboard');
 
         if (!response.ok) {
             throw new Error('Failed to fetch leaderboard');

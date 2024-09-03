@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Ensure the database directory exists
-RUN mkdir -p ./database
+RUN mkdir -p ./data
 
 # Expose the port the app runs on
 EXPOSE 3000

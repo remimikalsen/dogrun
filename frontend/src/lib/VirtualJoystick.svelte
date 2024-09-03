@@ -94,6 +94,7 @@
         color: white;
         border: none;
         cursor: pointer;
+        touch-action: manipulation;
     }
 
     .virtual-joystick div {

@@ -5,7 +5,7 @@ export const POST = async ({ request }) => {
     try {
         const { initials, bones } = await request.json();
 
-        const response = await fetch('http://localhost:3000/api/score', {
+        const response = await fetch('http://sukami_backend:3000/api/score', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
